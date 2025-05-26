@@ -1,11 +1,7 @@
-import "./App.css";
-
 function App() {
   return (
     <>
-      <div className="p-4 text-center text-lg font-bold text-blue-500">
-        Hello Football World 🌍
-      </div>
+      <div className="bg-red-500">Hello Football World 🌍</div>
     </>
   );
 }
