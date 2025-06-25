@@ -11,3 +11,6 @@ build/
 
 # vscode settings
 .vscode/
+
+# Player data csv file
+backend/data/*.csv
