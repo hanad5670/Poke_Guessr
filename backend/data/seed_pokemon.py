@@ -20,7 +20,7 @@ def import_csv(conn, csv_path):
             # Skip header row
             next(f)  
             cur.copy_expert("""
-            COPY pokemon FROM STDIN WITH CSV
+            COPY pokemon (pokedex_number, name, height_cm, weight_kg, types, total_base_stats, generation) FROM STDIN WITH CSV
             """, f)
     conn.commit()
     print(f"Imported data from {csv_path}")
@@ -38,11 +38,16 @@ def main():
     try:
         # 1. Create table
         run_sql_file(conn, schema_path)
+
+        # 2. Delete data that's already there
+        with conn.cursor() as cur:
+            cur.execute("TRUNCATE TABLE pokemon RESTART IDENTITY CASCADE;")
+        conn.commit()
         
-        # 2. Import data
+        # 3. Import data
         import_csv(conn, csv_path)
         
-        # 3. Quick verification
+        # 4. Quick verification
         with conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM pokemon")
             count = cur.fetchone()[0]
