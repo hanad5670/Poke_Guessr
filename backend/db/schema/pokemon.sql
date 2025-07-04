@@ -5,5 +5,7 @@ CREATE TABLE IF NOT EXISTS pokemon (
   weight_kg REAL,
   types TEXT,
   total_base_stats INTEGER,
-  generation TEXT
+  generation TEXT,
+  sprite BYTEA,
+  silhouette BYTEA
 );
