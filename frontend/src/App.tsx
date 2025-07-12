@@ -1,7 +1,13 @@
+import SearchBar from "./components/SearchBar/SearchBar";
+
 function App() {
   return (
     <>
-      <div className="bg-red-500">Hello Football World 🌍</div>
+      <SearchBar
+        onGuess={(name) => {
+          console.log(`User Guessed: ${name}`);
+        }}
+      />
     </>
   );
 }
