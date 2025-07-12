@@ -8,15 +8,17 @@ export const searchPokemonByName = async (
   res: Response
 ): Promise<void> => {
   const searchQuery = req.query.q as string;
+  console.log(req.query);
 
   if (!searchQuery || searchQuery.length < 1) {
+    console.log(searchQuery);
     res.status(400).json({ error: "Query parameter is required" });
     return;
   }
 
   try {
     const result = await query(
-      "SELECT name FROM pokemon WHERE LOWER(name) LIKE $1 LIMIT 10",
+      "SELECT name FROM pokemon WHERE LOWER(name) LIKE $1 ORDER BY LOWER(name) LIKE LOWER($1) || '%' DESC, name ASC LIMIT 10",
       [`%${searchQuery.toLowerCase()}%`]
     );
     console.log(result);
@@ -51,7 +53,7 @@ export const getPokemonByName = async (
 };
 
 // Get the pokemon of the day
-export const pokemonOfTheDay = async (
+export const getSilhouette = async (
   req: Request,
   res: Response
 ): Promise<void> => {
@@ -60,7 +62,7 @@ export const pokemonOfTheDay = async (
   try {
     // Check daily_pokemon db if the value exists, otherwise we will make it and store it in the db
     const existing = await query(
-      "SELECT p.* FROM daily_pokemon dp JOIN pokemon p ON dp.pokemon_id = p.pokedex_number WHERE dp.date = $1",
+      "SELECT p.silhouette FROM daily_pokemon dp JOIN pokemon p ON dp.pokemon_id = p.pokedex_number WHERE dp.date = $1",
       [today]
     );
 

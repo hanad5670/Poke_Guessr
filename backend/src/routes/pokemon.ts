@@ -3,11 +3,11 @@ import { query } from "../db";
 import {
   searchPokemonByName,
   getPokemonByName,
-  pokemonOfTheDay,
+  getSilhouette,
 } from "../controllers/pokemonController";
 const router = Router();
 
 router.get("/search", searchPokemonByName);
-router.get("/daily", pokemonOfTheDay);
+router.get("/daily/silhouette", getSilhouette);
 router.get("/:name", getPokemonByName);
 export default router;
