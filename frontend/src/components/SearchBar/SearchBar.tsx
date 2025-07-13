@@ -66,6 +66,7 @@ const SearchBar: React.FC<Props> = ({ onGuess }) => {
   return (
     <div className="relative w-full max-w-lg mx-auto my-4">
       <input
+        id="pokemon-guess-input"
         type="text"
         placeholder="Guess a Pokemon..."
         value={input}
