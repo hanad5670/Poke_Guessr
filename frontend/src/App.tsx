@@ -1,23 +1,14 @@
-import GuessBox from "./components/GuessBox";
-import GuessList from "./components/GuessList";
-import SearchBar from "./components/SearchBar/SearchBar";
-import {
-  guessAccSample,
-  guessRoundListSample,
-  pokemonSample,
-  type Pokemon,
-} from "./types";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import GuessingPage from "./pages/GuessingPage";
 
 function App() {
   return (
-    <>
-      <SearchBar
-        onGuess={(name) => {
-          console.log(`User Guessed: ${name}`);
-        }}
-      />
-      <GuessList guessRounds={guessRoundListSample} maxGuesses={8} />
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<GuessingPage />} />
+      </Routes>
+    </Router>
   );
 }
 
