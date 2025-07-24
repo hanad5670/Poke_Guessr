@@ -1,4 +1,4 @@
-import type { GuessHint, Pokemon } from "../types";
+import { PokemonGuessingKeys, type GuessHint, type Pokemon } from "../types";
 
 interface Props {
   guessNumber: number;
@@ -55,7 +55,7 @@ const GuessBox: React.FC<Props> = ({
       id={`guess-box-${guessNumber}-activated`}
       className="flex items-center overflow-hidden relative w-full max-w-lg mx-auto my-4 border-2 border-gray-800 rounded"
     >
-      {Object.keys(pokemonGuessed).map((key) => {
+      {Object.values(PokemonGuessingKeys).map((key) => {
         const k = key as keyof Pokemon;
         return (
           <div

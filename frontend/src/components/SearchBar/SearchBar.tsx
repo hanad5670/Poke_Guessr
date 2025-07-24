@@ -19,14 +19,10 @@ const SearchBar: React.FC<Props> = ({ onGuess }) => {
     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
 
     debounceTimeout.current = window.setTimeout(async () => {
-      () => {
-        console.log(suggestions);
-      };
       try {
         const res = await axios.get(`/api/pokemon/search`, {
           params: { q: query },
         });
-        console.log("res.data", res.data);
         setSuggestions(res.data);
         setShowDropdown(true);
       } catch (err) {
@@ -47,16 +43,17 @@ const SearchBar: React.FC<Props> = ({ onGuess }) => {
   }, [input]);
 
   const handleSelect = (name: string) => {
-    setInput(name);
+    onGuess(name);
+    setInput("");
     setShowDropdown(false);
     setSuggestions([]);
     setActiveIndex(0);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && input.trim() !== "") {
+    if (e.key === "Enter" && suggestions.length > 0) {
       e.preventDefault();
-      onGuess(input.trim());
+      onGuess(suggestions[0]);
       setInput("");
       setSuggestions([]);
       setShowDropdown(false);

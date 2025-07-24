@@ -1,4 +1,4 @@
-import type { GuessRound } from "../types";
+import { PokemonGuessingKeys, type GuessRound } from "../types";
 import GuessBox from "./GuessBox";
 
 interface Props {
@@ -11,14 +11,22 @@ const GuessList: React.FC<Props> = ({ maxGuesses, guessRounds }) => {
     <div className="flex-col">
       <div
         id="column-labels"
-        className="flex items-center border-b border-dashed"
+        className="flex items-center border-b border-dashed justify-center w-full"
       >
-        <label className="border-r border-dashed px-6 py-2 ">Name</label>
-        <label className="border-r border-dashed px-6 py-2">Name</label>
-        <label className="border-r border-dashed px-4 py-2">Name</label>
-        <label className="border-r border-dashed px-4 py-2">Name</label>
-        <label className="border-r border-dashed px-4 py-2">Name</label>
-        <label className="border-r border-dashed px-4 py-2">Name</label>
+        {Object.values(PokemonGuessingKeys).map((key, index) => {
+          const k = key as string;
+          const first = index === 0;
+          return (
+            <label
+              key={k}
+              className={`border-r ${
+                first ? "border-l" : ""
+              } border-dashed px-6 py-2`}
+            >
+              {k.charAt(0).toUpperCase() + k.slice(1)}
+            </label>
+          );
+        })}
       </div>
       {/* Render the Guesses that Already Exist */}
       {guessRounds.map((round, i) => (

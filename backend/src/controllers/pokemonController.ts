@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { query } from "../db";
 import { storeDailyPokemon } from "./utils";
+import { GAME_CONFIG } from "../config/gameConfig";
 
 // Search pokemon by name:
 export const searchPokemonByName = async (
@@ -94,4 +95,26 @@ export const getSilhouette = async (
     console.log("Error fetching pokemon", err);
     res.status(500).json({ error: "Internal server error" });
   }
+};
+
+export const getMaxGuesses = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    console.log("getting max");
+    res.status(200).json({ maxGuesses: GAME_CONFIG.MAX_GUESSES });
+  } catch (err) {
+    console.log("Error getting guess number", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const handlePokemonGuess = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const guessedPokemon = req.body.name;
+
+  console.log("Guessed Pokemon:", guessedPokemon);
 };
