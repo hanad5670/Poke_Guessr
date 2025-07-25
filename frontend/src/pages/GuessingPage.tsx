@@ -30,7 +30,7 @@ const GuessingPage: React.FC = () => {
   const sendGuess = async (guess: string) => {
     try {
       console.log(guess);
-      const response = await axios.post("/api/pokemon/guess", { name: guess });
+      const response = await axios.post("/api/pokemon/guess", { guess });
       console.log(response);
     } catch (err) {
       console.log("There was an error sending the guess:", err);
