@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { query } from "../db";
-import { storeDailyPokemon } from "./utils";
+import { getTodaysPokemon } from "./utils";
 import { GAME_CONFIG } from "../config/gameConfig";
 
 // Search pokemon by name:
@@ -9,10 +9,8 @@ export const searchPokemonByName = async (
   res: Response
 ): Promise<void> => {
   const searchQuery = req.query.q as string;
-  console.log(req.query);
 
   if (!searchQuery || searchQuery.length < 1) {
-    console.log(searchQuery);
     res.status(400).json({ error: "Query parameter is required" });
     return;
   }
@@ -22,7 +20,6 @@ export const searchPokemonByName = async (
       "SELECT name FROM pokemon WHERE LOWER(name) LIKE $1 ORDER BY LOWER(name) LIKE LOWER($1) || '%' DESC, name ASC LIMIT 10",
       [`%${searchQuery.toLowerCase()}%`]
     );
-    console.log(result);
     res.status(200).json(result.rows.map((row) => row.name));
   } catch (err) {
     console.log("Error searching Pokemon:", err);
@@ -53,42 +50,25 @@ export const getPokemonByName = async (
   }
 };
 
-// Get the pokemon of the day
+// Get silhouette of today's daily pokemon
 export const getSilhouette = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const today = new Date().toISOString().slice(0, 10);
-
   try {
     // Check daily_pokemon db if the value exists, otherwise we will make it and store it in the db
-    const existing = await query(
-      "SELECT p.silhouette FROM daily_pokemon dp JOIN pokemon p ON dp.pokemon_id = p.pokedex_number WHERE dp.date = $1",
-      [today]
-    );
 
-    if (existing.rows.length > 0) {
-      console.log("Found the daily pokemon in db");
-      res.status(200).json(existing.rows[0]);
-      return;
-    }
-
-    const hash = [...today].reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const countResult = await query("SELECT COUNT(*) FROM pokemon");
-    const totalPokemon = parseInt(countResult.rows[0].count, 10);
-    console.log(totalPokemon);
-
-    const pokeId = (hash % totalPokemon) + 1;
+    const dailyPokemonId = await getTodaysPokemon();
+    console.log("Daily Pokemon Number", dailyPokemonId);
 
     const result = await query(
-      "SELECT * FROM pokemon WHERE pokedex_number = $1",
-      [pokeId]
+      "SELECT silhouette FROM pokemon WHERE pokedex_number = $1",
+      [dailyPokemonId]
     );
 
-    if (result.rows.length === 0) {
+    if (result.rows.length < 0) {
       res.status(404).json({ error: "No Pokemon found for the day" });
     } else {
-      await storeDailyPokemon(pokeId, today);
       res.status(200).json(result.rows[0]);
     }
   } catch (err) {
@@ -110,11 +90,42 @@ export const getMaxGuesses = async (
   }
 };
 
+// TODO: FIX LOGIC FOR GETTING DAILY POKEMON TO SEPERATE FROM GETTING SILHOUETTE
 export const handlePokemonGuess = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const guessedPokemon = req.body.name;
+  const guess = req.body.guess.toLowerCase();
 
-  console.log("Guessed Pokemon:", guessedPokemon);
+  try {
+    // First get the guessed pokemon from db
+    const guessResults = await query(
+      "SELECT * FROM pokemon WHERE LOWER(name) = $1",
+      [guess]
+    );
+
+    if (guessResults.rows.length < 0) {
+      res.status(404).json({ error: `Pokemon of name ${guess} was not found` });
+    }
+
+    console.log(guessResults);
+    const guessedPokemon = guessResults.rows[0];
+
+    // Now get the pokemon of the day to commpare with
+    const dailyPokemonId = await getTodaysPokemon();
+
+    const result = await query(
+      "SELECT * FROM pokemon WHERE pokedex_number = $1",
+      [dailyPokemonId]
+    );
+
+    if (result.rows.length < 0) {
+      res.status(404).json({ error: "No Pokemon of the day found" });
+    } else {
+      const dailyPokemon = result.rows[0];
+      console.log("Guessed Pokemon:", guessedPokemon);
+    }
+  } catch (err) {
+    console.log("Error comparing guessed pokemon:", err);
+  }
 };
