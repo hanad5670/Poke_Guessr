@@ -5,6 +5,7 @@ export const GAME_CONFIG = {
 export const CLOSE_VALUES = {
   height: 20,
   weight: 10,
+  pokedex: 10,
 };
 
 export interface Pokemon {
@@ -16,6 +17,18 @@ export interface Pokemon {
   region: string;
   sprite?: string;
   silhouette?: string;
+}
+
+export interface PokemonDB {
+  name: string;
+  pokedex_number: number;
+  height_cm: number;
+  weight_kg: number;
+  types: string;
+  total_base_stats: number;
+  generation: string;
+  sprite: string;
+  silhoutte: string;
 }
 
 export type GuessHint =

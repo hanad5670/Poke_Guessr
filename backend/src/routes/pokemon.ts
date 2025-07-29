@@ -6,12 +6,14 @@ import {
   getSilhouette,
   getMaxGuesses,
   handlePokemonGuess,
+  getPokeImage,
 } from "../controllers/pokemonController";
 const router = Router();
 
 // GET ROUTES
 router.get("/search", searchPokemonByName);
 router.get("/daily/silhouette", getSilhouette);
+router.get("/daily/sprite", getPokeImage);
 router.get("/guessNum", getMaxGuesses);
 router.get("/:name", getPokemonByName);
 

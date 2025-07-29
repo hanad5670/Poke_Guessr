@@ -3,11 +3,12 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import AutoCompleteList from "./AutoCompleteList";
 interface Props {
   onGuess: (pokemonName: string) => void;
+  isDisabled: boolean;
 }
 
 const DEBOUNCE_TIMEOUT = 200;
 
-const SearchBar: React.FC<Props> = ({ onGuess }) => {
+const SearchBar: React.FC<Props> = ({ onGuess, isDisabled }) => {
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showDropDown, setShowDropdown] = useState(false);
@@ -69,7 +70,10 @@ const SearchBar: React.FC<Props> = ({ onGuess }) => {
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="w-full border-2 border-gray-800 rounded px-4 py-2 text-lg shadow"
+        className={`${
+          isDisabled ? "bg-gray-200" : ""
+        } w-full border-2 border-gray-800 rounded px-4 py-2 text-lg shadow`}
+        disabled={isDisabled}
       />
       {showDropDown && (
         <AutoCompleteList

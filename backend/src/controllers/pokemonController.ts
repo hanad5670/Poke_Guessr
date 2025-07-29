@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { query } from "../db";
-import { getTodaysPokemon } from "./utils";
+import {
+  compareGuessedPokemon,
+  getTodaysPokemon,
+  transformDbPokemon,
+} from "./utils";
 import { GAME_CONFIG } from "../config/gameConfig";
 
 // Search pokemon by name:
@@ -69,11 +73,38 @@ export const getSilhouette = async (
     if (result.rows.length < 0) {
       res.status(404).json({ error: "No Pokemon found for the day" });
     } else {
-      res.status(200).json(result.rows[0]);
+      const silhoutte = result.rows[0].silhouette;
+      // Convert to base64 string to send to the frontend
+      const base64 = silhoutte.toString("base64");
+      const imageDataUrl = `data:image/png;base64,${base64}`;
+      res.status(200).json(imageDataUrl);
     }
   } catch (err) {
     console.log("Error fetching pokemon", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getPokeImage = async (req: Request, res: Response) => {
+  try {
+    const dailyPokemonId = await getTodaysPokemon();
+    console.log("Daily Pokemon Number", dailyPokemonId);
+
+    const result = await query(
+      "SELECT sprite FROM pokemon WHERE pokedex_number = $1",
+      [dailyPokemonId]
+    );
+
+    if (result.rows.length < 0) {
+      res.status(404).json({ error: "No Pokemon found for the day" });
+    } else {
+      const sprite = result.rows[0].sprite;
+      const base64 = sprite.toString("base64");
+      const imageDataUrl = `data:image/png;base64,${base64}`;
+      res.status(200).json(imageDataUrl);
+    }
+  } catch (err) {
+    console.log("Error trying to send pokemon image", err);
   }
 };
 
@@ -90,7 +121,6 @@ export const getMaxGuesses = async (
   }
 };
 
-// TODO: FIX LOGIC FOR GETTING DAILY POKEMON TO SEPERATE FROM GETTING SILHOUETTE
 export const handlePokemonGuess = async (
   req: Request,
   res: Response
@@ -109,7 +139,7 @@ export const handlePokemonGuess = async (
     }
 
     console.log(guessResults);
-    const guessedPokemon = guessResults.rows[0];
+    const guessedPokemon = transformDbPokemon(guessResults.rows[0]);
 
     // Now get the pokemon of the day to commpare with
     const dailyPokemonId = await getTodaysPokemon();
@@ -122,8 +152,11 @@ export const handlePokemonGuess = async (
     if (result.rows.length < 0) {
       res.status(404).json({ error: "No Pokemon of the day found" });
     } else {
-      const dailyPokemon = result.rows[0];
-      console.log("Guessed Pokemon:", guessedPokemon);
+      const dailyPokemon = transformDbPokemon(result.rows[0]);
+      console.log("the answer is", dailyPokemon);
+      const guessHint = compareGuessedPokemon(guessedPokemon, dailyPokemon);
+      console.log(guessHint);
+      res.status(200).json(guessHint);
     }
   } catch (err) {
     console.log("Error comparing guessed pokemon:", err);
