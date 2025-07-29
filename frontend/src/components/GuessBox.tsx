@@ -60,6 +60,7 @@ const GuessBox: React.FC<Props> = ({
         return (
           <div
             id={key}
+            key={key}
             className={`${getCellClass(k)} ${
               k === "name" ? "px-6 border-r border-dashed" : ""
             }`}

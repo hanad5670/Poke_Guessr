@@ -76,7 +76,7 @@ export const guessRoundListSample: GuessRound[] = [
       height: 10,
       weight: 20,
       region: "Kanto",
-      types: "Electric",
+      types: ["Electric", "Fairy"],
     },
     guessHint: {
       name: "wrong",
