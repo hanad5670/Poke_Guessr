@@ -34,11 +34,10 @@ export const getDailyPokemon = async (day: string): Promise<number> => {
 };
 
 export const addNewDailyPokemon = async (day: string): Promise<number> => {
-  const hash = [...day].reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const countResult = await query("SELECT COUNT(*) FROM pokemon");
   const totalPokemon = parseInt(countResult.rows[0].count, 10);
 
-  const pokeId = (hash % totalPokemon) + 1;
+  const pokeId = Math.floor(Math.random() * totalPokemon) + 1;
 
   storeDailyPokemon(pokeId, day);
 
