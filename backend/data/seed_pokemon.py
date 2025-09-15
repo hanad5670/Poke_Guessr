@@ -9,9 +9,13 @@ def run_sql_file(conn, filepath):
     with open(filepath, 'r') as f:
         sql = f.read()
     with conn.cursor() as cur:
-        cur.execute(sql)
-    conn.commit()
-    print(f"Executed SQL from {filepath}")
+        try:
+            cur.execute(sql)
+            conn.commit()
+            print(f"Executed SQL from {filepath}")
+        except psycopg2.Error as e:
+            conn.rollback()
+            print(f"Error executing sql from {filepath}: {e}")
     
 def import_csv(conn, csv_path):
     # Import CSV data using COPY (fastest method)
@@ -35,7 +39,21 @@ def main():
     # Get csv filepath
     csv_path = os.path.join("..", "data", "pokemon.csv")
     
+    # Get expected pokemon count:
+    expected_count = int(os.getenv("POKEMON_LIMIT"))
+    
     try:
+        # If the db is completely populated already, don't run this script
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) FROM pokemon")
+            pokemon_count = cur.fetchone()[0]
+            print(pokemon_count)
+
+            if pokemon_count == expected_count:
+                print("Pokemon already exist in db. Skipping seeding from csv.")
+                return
+        conn.commit()
+
         # 1. Create table
         run_sql_file(conn, schema_path)
 

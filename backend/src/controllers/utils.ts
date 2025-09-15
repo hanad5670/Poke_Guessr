@@ -12,7 +12,7 @@ export const storeDailyPokemon = async (
   day: string
 ): Promise<void> => {
   const result = await query(
-    "INSERT INTO daily_pokemon (date, pokemon_id) VALUES ($1, $2)",
+    "INSERT INTO daily_pokemon (date, pokemon_id) VALUES ($1, $2) ON CONFLICT (date) DO NOTHING",
     [day, pokeid]
   );
 };

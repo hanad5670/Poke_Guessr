@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import time
+import os
 
 BASE_URL = "https://pokeapi.co/api/v2/"
 POKEMON_LIMIT = 1025
@@ -48,4 +49,9 @@ def all_pokemon_csv():
 
 
 if __name__ == "__main__":
-  all_pokemon_csv()
+  # If csv already exists, don't run
+
+  if os.path.exists("pokemon.csv"):
+    print("Pokemon csv already exists. Skipping fetch from PokeAPI.")
+  else:
+    all_pokemon_csv()

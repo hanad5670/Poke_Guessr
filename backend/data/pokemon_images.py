@@ -52,10 +52,14 @@ def main():
     conn = psycopg2.connect(os.getenv('DATABASE_URL'))
     with conn.cursor() as cur:
         # Get all pokemon names and their pokedex numbers
-        cur.execute("SELECT pokedex_number, name FROM pokemon")
+        cur.execute("SELECT pokedex_number, name, sprite, silhouette FROM pokemon")
         pokemons = cur.fetchall()
 
-        for pokedex_number, name in pokemons:
+        for pokedex_number, name, sprite, silhouette in pokemons:
+            if sprite and silhouette:
+                print(f"Sprite and silhouette already exist for pokemon {name}")
+                continue
+
             print(f"Processing {name} (#{pokedex_number})...")
             img = get_pokemon_sprite(name)
             if img is None:
