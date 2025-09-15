@@ -14,3 +14,8 @@ build/
 
 # Player data csv file
 backend/data/*.csv
+
+# Python venv and cache
+venv/
+__pycache__
+*.py[cod]

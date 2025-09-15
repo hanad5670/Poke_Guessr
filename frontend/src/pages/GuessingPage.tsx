@@ -79,7 +79,7 @@ const GuessingPage: React.FC = () => {
     }
   };
   return (
-    <>
+    <div>
       <Silhouette
         pokemonSil={silhoutte}
         showSilhouette={showSilhouette}
@@ -87,7 +87,7 @@ const GuessingPage: React.FC = () => {
       />
       <SearchBar onGuess={sendGuess} isDisabled={disableSearchBar} />
       <GuessList guessRounds={guessList} maxGuesses={maxGuesses} />
-    </>
+    </div>
   );
 };
 

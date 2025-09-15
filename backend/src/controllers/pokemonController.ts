@@ -113,7 +113,6 @@ export const getMaxGuesses = async (
   res: Response
 ): Promise<void> => {
   try {
-    console.log("getting max");
     res.status(200).json({ maxGuesses: GAME_CONFIG.MAX_GUESSES });
   } catch (err) {
     console.log("Error getting guess number", err);
