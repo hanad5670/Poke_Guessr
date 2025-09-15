@@ -1,6 +1,6 @@
 # Pokémon Guessing Game
 
-This project is a Pokémon guessing game with a React frontend (Vite) and a Node/Python backend using PostgreSQL. The backend includes scripts to fetch Pokémon data, seed the database, and generate Pokémon images with silhouettes.
+This project is a Pokémon guessing game with a React frontend (Vite) and a Node backend using PostgreSQL. The backend includes Python scripts to fetch Pokémon data, seed the database, and generate Pokémon images with silhouettes.
 
 ---
 
