@@ -1,11 +1,14 @@
 import requests
-from PIL import Image
+from PIL import Image, ImageFile
 import io
 import psycopg2
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# This flag will help load pngs with excessive metadata
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 def get_pokemon_sprite(pokemon_name):
     url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_name.lower()}"
