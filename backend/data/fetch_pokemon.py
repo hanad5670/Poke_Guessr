@@ -17,6 +17,7 @@ def get_pokemon_data(pokemon_url):
 
   # Get data needed for each Pokemon:
   pokemon = requests.get(pokemon_url).json()
+  data["pokedex"] = pokemon["id"]
   data["name"] = pokemon["name"].capitalize()
   data["height"] = pokemon["height"] * 10 # Storing height in cm
   data["weight"] = pokemon["weight"] / 10 # Storing weight in kg
@@ -44,13 +45,13 @@ def all_pokemon_csv():
       print(f"Error getting data for {pokemon['name']}: {e}")
 
   df = pd.DataFrame(all_data)
-  df.to_csv("pokemon_data.csv", index=False)
-  print("Saved to pokemon_dta.csv")
+  df.to_csv("pokemon.csv", index=False)
+  print("Saved to pokemon.csv")
 
 
 if __name__ == "__main__":
+  
   # If csv already exists, don't run
-
   if os.path.exists("pokemon.csv"):
     print("Pokemon csv already exists. Skipping fetch from PokeAPI.")
   else:

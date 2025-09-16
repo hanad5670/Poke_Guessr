@@ -43,6 +43,9 @@ def main():
     expected_count = int(os.getenv("POKEMON_LIMIT"))
     
     try:
+        # 1. Create table
+        run_sql_file(conn, schema_path)
+        
         # If the db is completely populated already, don't run this script
         with conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM pokemon")
@@ -53,9 +56,6 @@ def main():
                 print("Pokemon already exist in db. Skipping seeding from csv.")
                 return
         conn.commit()
-
-        # 1. Create table
-        run_sql_file(conn, schema_path)
 
         # 2. Delete data that's already there
         with conn.cursor() as cur:
