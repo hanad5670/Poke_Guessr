@@ -137,9 +137,7 @@ export const handlePokemonGuess = async (
       res.status(404).json({ error: `Pokemon of name ${guess} was not found` });
     }
 
-    console.log(guessResults);
     const guessedPokemon = transformDbPokemon(guessResults.rows[0]);
-
     // Now get the pokemon of the day to commpare with
     const dailyPokemonId = await getTodaysPokemon();
 

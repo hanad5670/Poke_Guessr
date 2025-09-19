@@ -55,6 +55,9 @@ export const getTodaysPokemon = async (): Promise<number> => {
 // This function is for transforming the pokemon from the db to the Pokemon type
 export const transformDbPokemon = (pokemon: PokemonDB): Pokemon => {
   const typeArr = pokemon.types.split(", ");
+  const pokemonSprite = pokemon.sprite
+    ? `data:image/png;base64,${(pokemon.sprite as Buffer).toString("base64")}`
+    : "";
 
   return {
     name: pokemon.name,
@@ -63,7 +66,7 @@ export const transformDbPokemon = (pokemon: PokemonDB): Pokemon => {
     height: pokemon.height_cm,
     weight: pokemon.weight_kg,
     region: pokemon.generation,
-    sprite: pokemon.sprite,
+    sprite: pokemonSprite,
     silhouette: pokemon.silhoutte,
   };
 };
@@ -89,34 +92,31 @@ export const compareGuessedPokemon = (
       case "pokedex":
         const targetPokedex = t as number;
         const guessPokedex = g as number;
-        guessHint[key] =
-          t === g
-            ? "correct"
-            : Math.abs(targetPokedex - guessPokedex) < CLOSE_VALUES.pokedex
-            ? { accuracy: "close" }
-            : { accuracy: "far" };
+        guessHint[key] = compareValues(
+          targetPokedex,
+          guessPokedex,
+          CLOSE_VALUES.pokedex
+        );
         break;
 
       case "height":
         const targetHeight = t as number;
         const guessHeight = g as number;
-        guessHint[key] =
-          t === g
-            ? "correct"
-            : Math.abs(targetHeight - guessHeight) < CLOSE_VALUES.height
-            ? { accuracy: "close" }
-            : { accuracy: "far" };
+        guessHint[key] = compareValues(
+          targetHeight,
+          guessHeight,
+          CLOSE_VALUES.height
+        );
         break;
 
       case "weight":
         const targetWeight = t as number;
         const guessWeight = g as number;
-        guessHint[key] =
-          t === g
-            ? "correct"
-            : Math.abs(targetWeight - guessWeight) < CLOSE_VALUES.weight
-            ? { accuracy: "close" }
-            : { accuracy: "far" };
+        guessHint[key] = compareValues(
+          targetWeight,
+          guessWeight,
+          CLOSE_VALUES.weight
+        );
         break;
 
       case "types":
@@ -136,6 +136,28 @@ export const compareGuessedPokemon = (
   });
 
   return { pokemon: guessedPokemon, guessHint: guessHint };
+};
+
+export const compareValues = (
+  val1: number,
+  val2: number,
+  closeRange: number
+): GuessHint => {
+  if (val1 === val2) {
+    return "correct";
+  }
+
+  const areClose = Math.abs(val1 - val2) < closeRange;
+
+  if (val1 > val2) {
+    return areClose
+      ? { accuracy: "close", direction: "higher" }
+      : { accuracy: "far", direction: "higher" };
+  }
+
+  return areClose
+    ? { accuracy: "close", direction: "lower" }
+    : { accuracy: "far", direction: "lower" };
 };
 
 export const haveCommonType = (
