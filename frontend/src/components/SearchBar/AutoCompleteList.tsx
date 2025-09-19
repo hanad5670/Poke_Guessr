@@ -22,22 +22,27 @@ const AutoCompleteList: React.FC<Props> = ({
   }, []);
 
   return (
-    <div className="border-gray-800 border-2">
-      <ul>
-        {suggestions.map((name, index) => (
-          <li
-            className={`${
-              activeIndex === index ? "bg-gray-100 font-semibold" : ""
-            }`}
-            key={index}
-            onMouseOver={() => onHover(index)}
-            onMouseLeave={() => onHover(0)}
-            onClick={() => onSelect(name)}
-          >
+    <div
+      className="absolute z-10 w-full mt-2 bg-pokemon-gray border-4 border-gray-900 
+                      rounded-lg shadow-xl max-h-60 overflow-y-auto"
+    >
+      {suggestions.map((name, index) => (
+        <button
+          className={`w-full px-4 py-3 text-left hover:bg-pokemon-red/20 
+                        transition-colors duration-150 border-b-2 border-gray-900/50 
+                        last:border-b-0 font-bold ${
+                          activeIndex === index ? "bg-pokemon-red/30" : ""
+                        }`}
+          key={index}
+          onMouseOver={() => onHover(index)}
+          onMouseLeave={() => onHover(-1)}
+          onClick={() => onSelect(name)}
+        >
+          <div className="text-pokemon-yellow font-bold text-xl mb-3">
             {name}
-          </li>
-        ))}
-      </ul>
+          </div>
+        </button>
+      ))}
     </div>
   );
 };

@@ -12,7 +12,7 @@ const SearchBar: React.FC<Props> = ({ onGuess, isDisabled }) => {
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showDropDown, setShowDropdown] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   const debounceTimeout = useRef<number | null>(null);
 
@@ -48,7 +48,7 @@ const SearchBar: React.FC<Props> = ({ onGuess, isDisabled }) => {
     setInput("");
     setShowDropdown(false);
     setSuggestions([]);
-    setActiveIndex(0);
+    setActiveIndex(-1);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -63,26 +63,30 @@ const SearchBar: React.FC<Props> = ({ onGuess, isDisabled }) => {
 
   return (
     <div className="relative w-full max-w-lg mx-auto my-4">
-      <input
-        id="pokemon-guess-input"
-        type="text"
-        placeholder="Guess a Pokemon..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className={`${
-          isDisabled ? "bg-gray-200" : ""
-        } w-full border-2 border-gray-800 rounded px-4 py-2 text-lg shadow`}
-        disabled={isDisabled}
-      />
-      {showDropDown && (
-        <AutoCompleteList
-          suggestions={suggestions}
-          activeIndex={activeIndex}
-          onSelect={handleSelect}
-          onHover={setActiveIndex}
+      <div className="relative">
+        <input
+          id="pokemon-guess-input"
+          type="text"
+          placeholder="Guess a Pokemon..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={isDisabled}
+          className="w-full px-4 py-4 text-lg bg-pokemon-gray border-4 border-gray-900 
+                   rounded-lg text-pokemon-white placeholder-gray-400 font-bold
+                   focus:outline-none focus:border-pokemon-yellow focus:ring-4 
+                   focus:ring-pokemon-yellow/20 disabled:opacity-50 disabled:cursor-not-allowed
+                   transition-all duration-200 shadow-lg"
         />
-      )}
+        {showDropDown && (
+          <AutoCompleteList
+            suggestions={suggestions}
+            activeIndex={activeIndex}
+            onSelect={handleSelect}
+            onHover={setActiveIndex}
+          />
+        )}
+      </div>
     </div>
   );
 };

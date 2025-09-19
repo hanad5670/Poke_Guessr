@@ -27,7 +27,7 @@ export interface PokemonDB {
   types: string;
   total_base_stats: number;
   generation: string;
-  sprite: string;
+  sprite: string | Buffer;
   silhoutte: string;
 }
 

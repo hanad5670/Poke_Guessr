@@ -8,23 +8,19 @@ interface Props {
 
 const GuessList: React.FC<Props> = ({ maxGuesses, guessRounds }) => {
   return (
-    <div className="flex-col">
+    <div className="w-full max-w-5xl mx-auto">
+      {/* Header */}
       <div
-        id="column-labels"
-        className="flex items-center border-b border-dashed justify-center w-full"
+        id="column-headers"
+        className="grid grid-cols-6 mb-6 text-sm font-bold text-pokemon-yellow bg-pokemon-gray 
+                    rounded-lg border-4 border-gray-900 overflow-hidden shadow-lg"
       >
-        {Object.values(PokemonGuessingKeys).map((key, index) => {
+        {Object.values(PokemonGuessingKeys).map((key) => {
           const k = key as string;
-          const first = index === 0;
           return (
-            <label
-              key={k}
-              className={`border-r ${
-                first ? "border-l" : ""
-              } border-dashed px-6 py-2`}
-            >
+            <div key={k} className="text-center py-4">
               {k.charAt(0).toUpperCase() + k.slice(1)}
-            </label>
+            </div>
           );
         })}
       </div>
