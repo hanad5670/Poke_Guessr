@@ -32,6 +32,12 @@ const SearchBar: React.FC<Props> = ({ onGuess, isDisabled }) => {
     }, DEBOUNCE_TIMEOUT);
   }, []);
 
+  const handleClickOutside = () => {
+    setTimeout(() => {
+      setShowDropdown(false);
+    }, 150);
+  };
+
   // logic for fetching search query suggestions
   useEffect(() => {
     if (input.length < 1) {
@@ -69,6 +75,8 @@ const SearchBar: React.FC<Props> = ({ onGuess, isDisabled }) => {
           type="text"
           placeholder="Guess a Pokemon..."
           value={input}
+          onBlur={handleClickOutside}
+          onFocus={() => input.length > 0 && setShowDropdown(true)}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isDisabled}
