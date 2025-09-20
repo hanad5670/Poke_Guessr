@@ -2,12 +2,53 @@ import React, { useState } from "react";
 
 interface Props {
   disabled: boolean;
+  currentDate: string;
 }
 
-const PrevGameSelector: React.FC<Props> = ({ disabled }) => {
+const PrevGameSelector: React.FC<Props> = ({ disabled, currentDate }) => {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const generatePreviousDays = (numDays: number): string[] => {
+    const days: string[] = [];
+    const today = new Date();
+
+    for (let i = 0; i < numDays; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      days.push(date.toISOString().split("T")[0]);
+    }
+
+    return days;
+  };
+
+  const formatDisplayDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    if (dateString === today.toISOString().split("T")[0]) {
+      return "Today";
+    } else if (dateString === yesterday.toISOString().split("T")[0]) {
+      return "Yesterday";
+    } else {
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+    }
+  };
+
+  const previousDays = generatePreviousDays(30); // Last 30 days
+
+  const handleDateSelect = (date: string) => {
+    setShowDatePicker(false);
+  };
+
   return (
     <div className="relative">
       <button
+        onClick={() => setShowDatePicker(!showDatePicker)}
         disabled={disabled}
         className="bg-pokemon-yellow text-pokemon-black font-bold py-4 px-8 rounded-lg 
                  border-4 border-gray-900 hover:bg-pokemon-red hover:text-pokemon-white 
@@ -18,6 +59,56 @@ const PrevGameSelector: React.FC<Props> = ({ disabled }) => {
           <span className="font-extrabold">Previous Games</span>
         </div>
       </button>
+
+      {showDatePicker && (
+        <div
+          className="absolute top-full right-0 mt-2 bg-pokemon-gray border-4 border-gray-900 
+                      rounded-lg shadow-xl z-50 w-96 max-h-96 overflow-y-auto"
+        >
+          <div className="p-4">
+            <div className="text-pokemon-yellow font-bold text-lg mb-4 text-center">
+              Select a Previous Day
+            </div>
+
+            {/* Dates Grid Layout */}
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {previousDays.map((date) => {
+                const isSelected = date == currentDate;
+
+                return (
+                  <button
+                    key={date}
+                    onClick={() => handleDateSelect("")}
+                    className={`
+                      p-2 rounded-lg border-2 font-bold text-xs transition-all duration-200
+                      flex flex-col items-center justify-center min-h-[50px]
+                      ${
+                        isSelected
+                          ? "bg-pokemon-red border-red-700 text-white shadow-lg scale-105"
+                          : "bg-pokemon-dark border-gray-600 text-white hover:bg-gray-600 hover:border-gray-500"
+                      }
+                    `}
+                    disabled={isSelected}
+                  >
+                    <div className="font-bold text-center leading-tight">
+                      {formatDisplayDate(date)}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div className="p-4 border-t-2 border-gray-900">
+            <button
+              onClick={() => setShowDatePicker(false)}
+              className="w-full bg-pokemon-red text-pokemon-white font-bold py-2 px-4 rounded-lg 
+                       hover:bg-pokemon-yellow hover:text-pokemon-black transition-colors duration-200"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
