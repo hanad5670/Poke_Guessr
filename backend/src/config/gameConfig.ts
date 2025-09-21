@@ -1,5 +1,6 @@
 export const GAME_CONFIG = {
   MAX_GUESSES: 8,
+  TOTAL_POKEDEX: 1025,
 };
 
 export const CLOSE_VALUES = {

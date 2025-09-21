@@ -1,11 +1,20 @@
 import {
   CLOSE_VALUES,
+  GAME_CONFIG,
   GuessHint,
   GuessRound,
   Pokemon,
   PokemonDB,
 } from "../config/gameConfig";
 import { query } from "../db";
+import crypto from "crypto";
+
+// This function generates a number according to the current date between 1 and the largest number in the pokedex
+export const getPokemonFromDate = (date: string) => {
+  const hash = crypto.createHash("sha256").update(date).digest("hex");
+  const outputNum = parseInt(hash.substring(0, 8), 16);
+  return (outputNum % GAME_CONFIG.TOTAL_POKEDEX) + 1;
+};
 
 export const storeDailyPokemon = async (
   pokeid: number,

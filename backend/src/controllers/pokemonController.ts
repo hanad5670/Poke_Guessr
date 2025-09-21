@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { query } from "../db";
 import {
   compareGuessedPokemon,
+  getPokemonFromDate,
   getTodaysPokemon,
   transformDbPokemon,
 } from "./utils";
@@ -60,9 +61,13 @@ export const getSilhouette = async (
   res: Response
 ): Promise<void> => {
   try {
-    // Check daily_pokemon db if the value exists, otherwise we will make it and store it in the db
-
-    const dailyPokemonId = await getTodaysPokemon();
+    const date = req.query.date as string | undefined;
+    if (!date) {
+      res.status(400).json({ error: "Missing date param" });
+      return;
+    }
+    console.log(date);
+    const dailyPokemonId = getPokemonFromDate(date);
     console.log("Daily Pokemon Number", dailyPokemonId);
 
     const result = await query(
@@ -87,7 +92,13 @@ export const getSilhouette = async (
 
 export const getPokeImage = async (req: Request, res: Response) => {
   try {
-    const dailyPokemonId = await getTodaysPokemon();
+    const date = req.query.date as string | undefined;
+    if (!date) {
+      res.status(400).json({ error: "Missing date param" });
+      return;
+    }
+    console.log(date);
+    const dailyPokemonId = getPokemonFromDate(date);
     console.log("Daily Pokemon Number", dailyPokemonId);
 
     const result = await query(
@@ -139,7 +150,13 @@ export const handlePokemonGuess = async (
 
     const guessedPokemon = transformDbPokemon(guessResults.rows[0]);
     // Now get the pokemon of the day to commpare with
-    const dailyPokemonId = await getTodaysPokemon();
+    const date = req.query.date as string | undefined;
+    if (!date) {
+      res.status(400).json({ error: "Missing date param" });
+      return;
+    }
+    console.log(date);
+    const dailyPokemonId = getPokemonFromDate(date);
 
     const result = await query(
       "SELECT * FROM pokemon WHERE pokedex_number = $1",
