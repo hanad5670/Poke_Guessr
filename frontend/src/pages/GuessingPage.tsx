@@ -35,8 +35,20 @@ const GuessingPage: React.FC = () => {
       // Replace silhouette with pokemon sprite
       getPokeImage();
       setShowSilhouette(true);
+
+      // Get the dates of previous games
     }
   }, [isWon, guessesLeft]);
+
+  const getPrevGames = async () => {
+    try {
+      const res = await axios.get("/api/game/prev");
+      const prevGames = res.data;
+      console.log(prevGames);
+    } catch (err) {
+      console.log("There was an error loading the previous dates: ", err);
+    }
+  };
 
   const getNumGuesses = async () => {
     try {
