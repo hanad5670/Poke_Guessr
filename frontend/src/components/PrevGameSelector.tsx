@@ -3,9 +3,14 @@ import React, { useState } from "react";
 interface Props {
   disabled: boolean;
   currentDate: string;
+  onPrevDateSelect: (date: string) => void;
 }
 
-const PrevGameSelector: React.FC<Props> = ({ disabled, currentDate }) => {
+const PrevGameSelector: React.FC<Props> = ({
+  disabled,
+  currentDate,
+  onPrevDateSelect,
+}) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const generatePreviousDays = (numDays: number): string[] => {
@@ -43,6 +48,7 @@ const PrevGameSelector: React.FC<Props> = ({ disabled, currentDate }) => {
 
   const handleDateSelect = (date: string) => {
     setShowDatePicker(false);
+    onPrevDateSelect(date);
   };
 
   return (
@@ -78,7 +84,7 @@ const PrevGameSelector: React.FC<Props> = ({ disabled, currentDate }) => {
                 return (
                   <button
                     key={date}
-                    onClick={() => handleDateSelect("")}
+                    onClick={() => handleDateSelect(date)}
                     className={`
                       p-2 rounded-lg border-2 font-bold text-xs transition-all duration-200
                       flex flex-col items-center justify-center min-h-[50px]

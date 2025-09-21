@@ -11,6 +11,7 @@ import PrevGameSelector from "../components/PrevGameSelector";
 const MAX_GUESS_DEFAULT = 8;
 
 const GuessingPage: React.FC = () => {
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [isWon, setIsWon] = useState<boolean>(false);
   const [guessesLeft, setGuessesLeft] = useState<number>(MAX_GUESS_DEFAULT);
@@ -23,8 +24,10 @@ const GuessingPage: React.FC = () => {
 
   // Setting up the game
   useEffect(() => {
+    const userLocalDate = new Date().toLocaleDateString("en-CA");
+    setSelectedDate(userLocalDate);
     getNumGuesses();
-    getSilhouette();
+    getSilhouette(userLocalDate);
   }, []);
 
   // Check if the user has won or lost the game
@@ -40,14 +43,21 @@ const GuessingPage: React.FC = () => {
     }
   }, [isWon, guessesLeft]);
 
-  const getPrevGames = async () => {
-    try {
-      const res = await axios.get("/api/game/prev");
-      const prevGames = res.data;
-      console.log(prevGames);
-    } catch (err) {
-      console.log("There was an error loading the previous dates: ", err);
-    }
+  // Resets the game state for a new game
+  const resetGame = () => {
+    setGameOver(false);
+    setIsWon(false);
+    setSilhoutte("");
+    setShowSilhouette(false);
+    setDisableSearchBar(false);
+    setGuessList([]);
+    setGuessesLeft(maxGuesses);
+  };
+
+  const handlePrevDateSelect = (date: string) => {
+    resetGame();
+    setSelectedDate(date);
+    getSilhouette(date);
   };
 
   const getNumGuesses = async () => {
@@ -61,9 +71,9 @@ const GuessingPage: React.FC = () => {
     }
   };
 
-  const getSilhouette = async () => {
+  const getSilhouette = async (date: string) => {
     try {
-      const res = await axios.get("/api/pokemon/daily/silhouette");
+      const res = await axios.get(`/api/pokemon/daily/silhouette?date=${date}`);
       console.log(res);
       setSilhoutte(res.data);
     } catch (err) {
@@ -73,7 +83,9 @@ const GuessingPage: React.FC = () => {
 
   const getPokeImage = async () => {
     try {
-      const res = await axios.get("/api/pokemon/daily/sprite");
+      const res = await axios.get(
+        `/api/pokemon/daily/sprite?date=${selectedDate}`
+      );
       console.log(res);
       setSilhoutte(res.data);
     } catch (err) {
@@ -83,7 +95,10 @@ const GuessingPage: React.FC = () => {
 
   const sendGuess = async (guess: string) => {
     try {
-      const response = await axios.post("/api/pokemon/guess", { guess });
+      const response = await axios.post(
+        `/api/pokemon/guess?date=${selectedDate}`,
+        { guess }
+      );
       const guessFeedback = response.data as GuessRound;
       console.log(guessFeedback);
       setGuessList((currList) => [...currList, guessFeedback]);
@@ -135,7 +150,11 @@ const GuessingPage: React.FC = () => {
         {/* Game Status */}
         <div className="flex flex-col items-center">
           <div className="flex items-center justify-center gap-6 mb-8">
-            <PrevGameSelector disabled={!gameOver} />
+            <PrevGameSelector
+              disabled={!gameOver}
+              currentDate={selectedDate}
+              onPrevDateSelect={handlePrevDateSelect}
+            />
             <Timer timeRef={timeRef} isRunning={!gameOver} />
           </div>
           <GameStatusBox
