@@ -21,7 +21,7 @@ const SearchBar: React.FC<Props> = ({ onGuess, isDisabled }) => {
 
     debounceTimeout.current = window.setTimeout(async () => {
       try {
-        const res = await axios.get(`/api/pokemon/search`, {
+        const res = await axios.get(`/pokemon/search`, {
           params: { q: query },
         });
         setSuggestions(res.data);
