@@ -16,51 +16,6 @@ export const getPokemonFromDate = (date: string) => {
   return (outputNum % GAME_CONFIG.TOTAL_POKEDEX) + 1;
 };
 
-export const storeDailyPokemon = async (
-  pokeid: number,
-  day: string
-): Promise<void> => {
-  const result = await query(
-    "INSERT INTO daily_pokemon (date, pokemon_id) VALUES ($1, $2) ON CONFLICT (date) DO NOTHING",
-    [day, pokeid]
-  );
-};
-
-export const getDailyPokemon = async (day: string): Promise<number> => {
-  const dailyPokemon = await query(
-    "SELECT p.pokedex_number FROM daily_pokemon dp JOIN pokemon p ON dp.pokemon_id = p.pokedex_number WHERE dp.date = $1",
-    [day]
-  );
-
-  if (dailyPokemon.rows.length > 0) {
-    // The daily is already stored in the db:
-    return dailyPokemon.rows[0].pokedex_number;
-  }
-
-  // Create new hash and add pokemon to db if nothing came from first search:
-  const newDailyPokemon = await addNewDailyPokemon(day);
-  return newDailyPokemon;
-};
-
-export const addNewDailyPokemon = async (day: string): Promise<number> => {
-  const countResult = await query("SELECT COUNT(*) FROM pokemon");
-  const totalPokemon = parseInt(countResult.rows[0].count, 10);
-
-  const pokeId = Math.floor(Math.random() * totalPokemon) + 1;
-
-  storeDailyPokemon(pokeId, day);
-
-  return pokeId;
-};
-
-// This function gets the daily pokemon for today's date:
-export const getTodaysPokemon = async (): Promise<number> => {
-  const todaysPokemon = await getDailyPokemon(
-    new Date().toISOString().slice(0, 10)
-  );
-  return todaysPokemon;
-};
-
 // This function is for transforming the pokemon from the db to the Pokemon type
 export const transformDbPokemon = (pokemon: PokemonDB): Pokemon => {
   const typeArr = pokemon.types.split(", ");
@@ -81,7 +36,6 @@ export const transformDbPokemon = (pokemon: PokemonDB): Pokemon => {
 };
 
 // HELPER FUNCTIONS FOR COMPARING POKEMON
-
 export const compareGuessedPokemon = (
   guessedPokemon: Pokemon,
   targetPokemon: Pokemon
