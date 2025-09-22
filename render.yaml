@@ -5,7 +5,7 @@ services:
     env: docker
     plan: free
     databases:
-      - name: pokemon_db
+      - name: poke-guessr-db
         databaseName: pokemon_guessr
         user: pokemon_user
 
