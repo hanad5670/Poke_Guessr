@@ -65,9 +65,7 @@ export const getSilhouette = async (
       res.status(400).json({ error: "Missing date param" });
       return;
     }
-    console.log(date);
     const dailyPokemonId = getPokemonFromDate(date);
-    console.log("Daily Pokemon Number", dailyPokemonId);
 
     const result = await query(
       "SELECT silhouette FROM pokemon WHERE pokedex_number = $1",
@@ -96,9 +94,7 @@ export const getPokeImage = async (req: Request, res: Response) => {
       res.status(400).json({ error: "Missing date param" });
       return;
     }
-    console.log(date);
     const dailyPokemonId = getPokemonFromDate(date);
-    console.log("Daily Pokemon Number", dailyPokemonId);
 
     const result = await query(
       "SELECT sprite FROM pokemon WHERE pokedex_number = $1",
@@ -154,7 +150,6 @@ export const handlePokemonGuess = async (
       res.status(400).json({ error: "Missing date param" });
       return;
     }
-    console.log(date);
     const dailyPokemonId = getPokemonFromDate(date);
 
     const result = await query(

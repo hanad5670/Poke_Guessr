@@ -17,10 +17,6 @@ const AutoCompleteList: React.FC<Props> = ({
     return null;
   }
 
-  useEffect(() => {
-    console.log(suggestions);
-  }, []);
-
   return (
     <div
       className="absolute z-10 w-full mt-2 bg-pokemon-gray border-4 border-gray-900 
