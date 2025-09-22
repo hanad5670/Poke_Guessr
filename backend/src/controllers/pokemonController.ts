@@ -3,7 +3,6 @@ import { query } from "../db";
 import {
   compareGuessedPokemon,
   getPokemonFromDate,
-  getTodaysPokemon,
   transformDbPokemon,
 } from "./utils";
 import { GAME_CONFIG } from "../config/gameConfig";
