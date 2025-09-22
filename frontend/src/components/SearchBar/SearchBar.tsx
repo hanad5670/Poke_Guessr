@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import AutoCompleteList from "./AutoCompleteList";
 import { api } from "../../lib/api";

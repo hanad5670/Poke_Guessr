@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import GuessList from "../components/GuessList";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { type GuessRound } from "../types";
-import axios from "axios";
 import Silhouette from "../components/Silhouette";
 import GameStatusBox from "../components/GameStatusBox";
 import Timer from "../components/Timer";
