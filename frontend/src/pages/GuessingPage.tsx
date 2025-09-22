@@ -62,7 +62,7 @@ const GuessingPage: React.FC = () => {
 
   const getNumGuesses = async () => {
     try {
-      const res = await axios.get("/api/pokemon/guessNum");
+      const res = await axios.get("/pokemon/guessNum");
       const guessesAllowed = res.data.maxGuesses;
       setMaxGuesses(guessesAllowed);
       setGuessesLeft(guessesAllowed - guessList.length);
@@ -73,7 +73,7 @@ const GuessingPage: React.FC = () => {
 
   const getSilhouette = async (date: string) => {
     try {
-      const res = await axios.get(`/api/pokemon/daily/silhouette?date=${date}`);
+      const res = await axios.get(`/pokemon/daily/silhouette?date=${date}`);
       setSilhoutte(res.data);
     } catch (err) {
       console.log("There was an error trying to load the silhouette:", err);
@@ -82,9 +82,7 @@ const GuessingPage: React.FC = () => {
 
   const getPokeImage = async () => {
     try {
-      const res = await axios.get(
-        `/api/pokemon/daily/sprite?date=${selectedDate}`
-      );
+      const res = await axios.get(`/pokemon/daily/sprite?date=${selectedDate}`);
       setSilhoutte(res.data);
     } catch (err) {
       console.log("There was an error gettign the Pokemon image", err);
@@ -93,10 +91,9 @@ const GuessingPage: React.FC = () => {
 
   const sendGuess = async (guess: string) => {
     try {
-      const response = await axios.post(
-        `/api/pokemon/guess?date=${selectedDate}`,
-        { guess }
-      );
+      const response = await axios.post(`/pokemon/guess?date=${selectedDate}`, {
+        guess,
+      });
       const guessFeedback = response.data as GuessRound;
       setGuessList((currList) => [...currList, guessFeedback]);
 
