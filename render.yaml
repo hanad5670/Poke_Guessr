@@ -4,10 +4,8 @@ services:
     name: poke-guessr-db
     env: docker
     plan: free
-    databases:
-      - name: poke-guessr-db
-        databaseName: pokemon_guessr
-        user: pokemon_user
+    databaseName: pokemon_guessr
+    user: pokemon_user
 
   # Backend API
   - type: web
