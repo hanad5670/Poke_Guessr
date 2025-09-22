@@ -1,12 +1,11 @@
-services:
-  # PostgreSQL Database
-  - type: pserv
-    name: poke-guessr-db
-    env: docker
-    plan: free
-    databaseName: pokemon_guessr
-    user: pokemon_user
+# PostgreSQL Database
+databases:
+  name: poke-guessr-db
+  plan: free
+  databaseName: pokemon_guessr
+  user: pokemon_user
 
+services:
   # Backend API
   - type: web
     name: poke-guessr-backend
