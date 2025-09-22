@@ -7,6 +7,7 @@ import Silhouette from "../components/Silhouette";
 import GameStatusBox from "../components/GameStatusBox";
 import Timer from "../components/Timer";
 import PrevGameSelector from "../components/PrevGameSelector";
+import { api } from "../lib/api";
 
 const MAX_GUESS_DEFAULT = 8;
 
@@ -62,7 +63,7 @@ const GuessingPage: React.FC = () => {
 
   const getNumGuesses = async () => {
     try {
-      const res = await axios.get("/pokemon/guessNum");
+      const res = await api.get("/pokemon/guessNum");
       const guessesAllowed = res.data.maxGuesses;
       setMaxGuesses(guessesAllowed);
       setGuessesLeft(guessesAllowed - guessList.length);
@@ -73,7 +74,7 @@ const GuessingPage: React.FC = () => {
 
   const getSilhouette = async (date: string) => {
     try {
-      const res = await axios.get(`/pokemon/daily/silhouette?date=${date}`);
+      const res = await api.get(`/pokemon/daily/silhouette?date=${date}`);
       setSilhoutte(res.data);
     } catch (err) {
       console.log("There was an error trying to load the silhouette:", err);
@@ -82,7 +83,7 @@ const GuessingPage: React.FC = () => {
 
   const getPokeImage = async () => {
     try {
-      const res = await axios.get(`/pokemon/daily/sprite?date=${selectedDate}`);
+      const res = await api.get(`/pokemon/daily/sprite?date=${selectedDate}`);
       setSilhoutte(res.data);
     } catch (err) {
       console.log("There was an error gettign the Pokemon image", err);
@@ -91,7 +92,7 @@ const GuessingPage: React.FC = () => {
 
   const sendGuess = async (guess: string) => {
     try {
-      const response = await axios.post(`/pokemon/guess?date=${selectedDate}`, {
+      const response = await api.post(`/pokemon/guess?date=${selectedDate}`, {
         guess,
       });
       const guessFeedback = response.data as GuessRound;

@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import AutoCompleteList from "./AutoCompleteList";
+import { api } from "../../lib/api";
 interface Props {
   onGuess: (pokemonName: string) => void;
   isDisabled: boolean;
@@ -21,7 +22,7 @@ const SearchBar: React.FC<Props> = ({ onGuess, isDisabled }) => {
 
     debounceTimeout.current = window.setTimeout(async () => {
       try {
-        const res = await axios.get(`/pokemon/search`, {
+        const res = await api.get(`/pokemon/search`, {
           params: { q: query },
         });
         setSuggestions(res.data);
