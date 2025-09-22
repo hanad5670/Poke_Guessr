@@ -1,9 +1,9 @@
 # PostgreSQL Database
 databases:
-  name: poke-guessr-db
-  plan: free
-  databaseName: pokemon_guessr
-  user: pokemon_user
+  - name: poke-guessr-db
+    plan: free
+    databaseName: pokemon_guessr
+    user: pokemon_user
 
 services:
   # Backend API
