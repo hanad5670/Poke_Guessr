@@ -10,7 +10,6 @@ services:
   - type: web
     name: poke-guessr-backend
     env: node
-    plan: free
     buildCommand: |
       cd backend
       npm ci
