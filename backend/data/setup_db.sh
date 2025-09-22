@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e  # Stop immediately if any command exits with a non-zero status
 
+echo "Starting database setup..."
+if [-z "$DATABASE_URL" ]; then
+    echo "DATABASE_URL not found"
+    exit 1
+fi
+
 echo "Starting Pokémon setup scripts..."
 
 # 1. Fetch Pokémon CSV

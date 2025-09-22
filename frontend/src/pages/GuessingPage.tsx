@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import GuessList from "../components/GuessList";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { guessRoundListSample, type GuessRound, type Pokemon } from "../types";
+import { type GuessRound } from "../types";
 import axios from "axios";
 import Silhouette from "../components/Silhouette";
 import GameStatusBox from "../components/GameStatusBox";
@@ -74,7 +74,6 @@ const GuessingPage: React.FC = () => {
   const getSilhouette = async (date: string) => {
     try {
       const res = await axios.get(`/api/pokemon/daily/silhouette?date=${date}`);
-      console.log(res);
       setSilhoutte(res.data);
     } catch (err) {
       console.log("There was an error trying to load the silhouette:", err);
@@ -86,7 +85,6 @@ const GuessingPage: React.FC = () => {
       const res = await axios.get(
         `/api/pokemon/daily/sprite?date=${selectedDate}`
       );
-      console.log(res);
       setSilhoutte(res.data);
     } catch (err) {
       console.log("There was an error gettign the Pokemon image", err);
@@ -100,7 +98,6 @@ const GuessingPage: React.FC = () => {
         { guess }
       );
       const guessFeedback = response.data as GuessRound;
-      console.log(guessFeedback);
       setGuessList((currList) => [...currList, guessFeedback]);
 
       // If user guessed correctly, end the game

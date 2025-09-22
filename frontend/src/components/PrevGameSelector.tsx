@@ -20,7 +20,7 @@ const PrevGameSelector: React.FC<Props> = ({
     for (let i = 0; i < numDays; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      days.push(date.toISOString().split("T")[0]);
+      days.push(date.toLocaleDateString("en-CA"));
     }
 
     return days;
@@ -28,20 +28,11 @@ const PrevGameSelector: React.FC<Props> = ({
 
   const formatDisplayDate = (dateString: string): string => {
     const date = new Date(dateString);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
 
-    if (dateString === today.toISOString().split("T")[0]) {
-      return "Today";
-    } else if (dateString === yesterday.toISOString().split("T")[0]) {
-      return "Yesterday";
-    } else {
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-    }
+    return date.toLocaleDateString("en-CA", {
+      month: "short",
+      day: "numeric",
+    });
   };
 
   const previousDays = generatePreviousDays(30); // Last 30 days

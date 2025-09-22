@@ -50,7 +50,6 @@ export const compareGuessedPokemon = (
   (Object.keys(targetPokemon) as (keyof Pokemon)[]).forEach((key) => {
     const t = targetPokemon[key];
     const g = guessedPokemon[key];
-    console.log(key);
     switch (key) {
       case "pokedex":
         const targetPokedex = t as number;
@@ -134,8 +133,6 @@ export const haveCommonType = (
       commonTypes += 1;
     }
   });
-
-  console.log("Common type counter: ", commonTypes);
 
   return commonTypes === types1.length && commonTypes === types2.length
     ? "correct"
