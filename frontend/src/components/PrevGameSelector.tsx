@@ -13,22 +13,20 @@ const PrevGameSelector: React.FC<Props> = ({
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const generatePreviousDays = (numDays: number): string[] => {
-    const days: string[] = [];
+  const generatePreviousDays = (numDays: number): Date[] => {
+    const days: Date[] = [];
     const today = new Date();
 
-    for (let i = 0; i < numDays; i++) {
+    for (let i = 1; i < numDays; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      days.push(date.toLocaleDateString("en-CA"));
+      days.push(date);
     }
 
     return days;
   };
 
-  const formatDisplayDate = (dateString: string): string => {
-    const date = new Date(dateString);
-
+  const formatDisplayDate = (date: Date): string => {
     return date.toLocaleDateString("en-CA", {
       month: "short",
       day: "numeric",
@@ -70,12 +68,12 @@ const PrevGameSelector: React.FC<Props> = ({
             {/* Dates Grid Layout */}
             <div className="grid grid-cols-5 gap-2 mb-4">
               {previousDays.map((date) => {
-                const isSelected = date == currentDate;
-
+                const dateString = date.toLocaleDateString("en-CA");
+                const isSelected = dateString === currentDate;
                 return (
                   <button
-                    key={date}
-                    onClick={() => handleDateSelect(date)}
+                    key={dateString}
+                    onClick={() => handleDateSelect(dateString)}
                     className={`
                       p-2 rounded-lg border-2 font-bold text-xs transition-all duration-200
                       flex flex-col items-center justify-center min-h-[50px]

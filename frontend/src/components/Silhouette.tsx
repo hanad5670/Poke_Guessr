@@ -35,7 +35,7 @@ const Silhouette: React.FC<Props> = ({
       </button>
 
       <div className="w-64 h-64 mx-auto bg-pokemon-gray border-4 border-gray-900 rounded-lg flex items-center justify-center shadow-lg mt-8">
-        {showSilhouette || isGameOver ? (
+        {(showSilhouette || isGameOver) && pokemonSil ? (
           <div>
             <img
               id="pokemon-silhouette"
