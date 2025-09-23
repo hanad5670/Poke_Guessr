@@ -7,6 +7,18 @@ export const PokemonGuessingKeys = {
   REGION: "region",
 } as const;
 
+export interface GameState {
+  gameOver: boolean;
+  isWon: boolean;
+  guessesLeft: number;
+  maxGuesses: number;
+  guessList: GuessRound[];
+  usedSilhouette: boolean;
+  timeElapsed: number;
+  lastPlayed: string;
+  currentStreak: number;
+}
+
 export type PokemonGuessingKey =
   (typeof PokemonGuessingKeys)[keyof typeof PokemonGuessingKeys];
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import GuessList from "../components/GuessList";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { type GuessRound } from "../types";
+import { type GameState, type GuessRound } from "../types";
 import Silhouette from "../components/Silhouette";
 import GameStatusBox from "../components/GameStatusBox";
 import Timer from "../components/Timer";
@@ -10,21 +10,49 @@ import { api } from "../lib/api";
 
 const MAX_GUESS_DEFAULT = 8;
 
+// Load today's result if it exists
+const loadGameState = (): GameState => {
+  const userLocalDate = new Date().toLocaleDateString("en-CA");
+  const saved = localStorage.getItem("gameState");
+  if (saved) {
+    try {
+      const parsed: GameState = JSON.parse(saved);
+      if (parsed.lastPlayed == userLocalDate) {
+        return parsed;
+      }
+    } catch (e) {
+      console.log("Error parsing gameState:", e);
+    }
+  }
+
+  return {
+    gameOver: false,
+    isWon: false,
+    guessesLeft: MAX_GUESS_DEFAULT,
+    guessList: [],
+    maxGuesses: MAX_GUESS_DEFAULT,
+    usedSilhouette: false,
+    timeElapsed: 0,
+    lastPlayed: userLocalDate,
+    currentStreak: 0,
+  };
+};
+
 const GuessingPage: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [gameOver, setGameOver] = useState<boolean>(false);
-  const [isWon, setIsWon] = useState<boolean>(false);
-  const [guessesLeft, setGuessesLeft] = useState<number>(MAX_GUESS_DEFAULT);
-  const [maxGuesses, setMaxGuesses] = useState<number>(MAX_GUESS_DEFAULT);
-  const [guessList, setGuessList] = useState<GuessRound[]>([]);
+  const userLocalDate = new Date().toLocaleDateString("en-CA");
+  const initialGameState = loadGameState();
+  const [gameState, setGameState] = useState<GameState>(initialGameState);
+  const [selectedDate, setSelectedDate] = useState<string>(userLocalDate);
   const [silhoutte, setSilhoutte] = useState<string>("");
   const [showSilhouette, setShowSilhouette] = useState(false);
   const [disableSearchBar, setDisableSearchBar] = useState(false);
-  const timeRef = useRef(0);
+  const timeRef = useRef(gameState.timeElapsed);
+
+  const playingTodaysGame = selectedDate === userLocalDate;
+  console.log(userLocalDate);
 
   // Setting up the game
   useEffect(() => {
-    const userLocalDate = new Date().toLocaleDateString("en-CA");
     setSelectedDate(userLocalDate);
     getNumGuesses();
     getSilhouette(userLocalDate);
@@ -32,26 +60,42 @@ const GuessingPage: React.FC = () => {
 
   // Check if the user has won or lost the game
   useEffect(() => {
-    if (isWon || guessesLeft == 0) {
-      setGameOver(true);
+    if (gameState.isWon || gameState.guessesLeft == 0) {
+      setGameState((prev) => {
+        const newState = {
+          ...prev,
+          gameOver: true,
+          timeElapsed: timeRef.current,
+          lastPlayed: userLocalDate,
+        };
+
+        // Update only if the user is playing today's game
+        if (playingTodaysGame) {
+          localStorage.setItem("gameState", JSON.stringify(newState));
+        }
+        return newState;
+      });
       setDisableSearchBar(true);
       // Replace silhouette with pokemon sprite
-      getPokeImage();
+      getPokeImage(selectedDate);
       setShowSilhouette(true);
-
-      // Get the dates of previous games
     }
-  }, [isWon, guessesLeft]);
+  }, [gameState.isWon, gameState.guessesLeft]);
 
   // Resets the game state for a new game
   const resetGame = () => {
-    setGameOver(false);
-    setIsWon(false);
-    setSilhoutte("");
     setShowSilhouette(false);
+    setSilhoutte("");
     setDisableSearchBar(false);
-    setGuessList([]);
-    setGuessesLeft(maxGuesses);
+    setGameState((prev) => ({
+      ...prev,
+      gameOver: false,
+      isWon: false,
+      guessesLeft: MAX_GUESS_DEFAULT,
+      guessList: [],
+      maxGuesses: MAX_GUESS_DEFAULT,
+      usedSilhouette: false,
+    }));
   };
 
   const handlePrevDateSelect = (date: string) => {
@@ -64,8 +108,11 @@ const GuessingPage: React.FC = () => {
     try {
       const res = await api.get("/pokemon/guessNum");
       const guessesAllowed = res.data.maxGuesses;
-      setMaxGuesses(guessesAllowed);
-      setGuessesLeft(guessesAllowed - guessList.length);
+      setGameState((prev) => ({
+        ...prev,
+        guessesLeft: guessesAllowed - prev.guessList.length,
+        maxGuesses: guessesAllowed,
+      }));
     } catch (err) {
       console.log("Error trying to get number of guesses:", err);
     }
@@ -80,9 +127,9 @@ const GuessingPage: React.FC = () => {
     }
   };
 
-  const getPokeImage = async () => {
+  const getPokeImage = async (date: string) => {
     try {
-      const res = await api.get(`/pokemon/daily/sprite?date=${selectedDate}`);
+      const res = await api.get(`/pokemon/daily/sprite?date=${date}`);
       setSilhoutte(res.data);
     } catch (err) {
       console.log("There was an error gettign the Pokemon image", err);
@@ -95,18 +142,28 @@ const GuessingPage: React.FC = () => {
         guess,
       });
       const guessFeedback = response.data as GuessRound;
-      setGuessList((currList) => [...currList, guessFeedback]);
+      setGameState((prev) => ({
+        ...prev,
+        guessList: [...prev.guessList, guessFeedback],
+      }));
 
       // If user guessed correctly, end the game
       if (guessFeedback.guessHint.name === "correct") {
-        setIsWon(true);
+        setGameState((prev) => ({
+          ...prev,
+          isWon: true,
+        }));
       }
 
-      setGuessesLeft((prev) => (prev < 1 ? 0 : prev - 1));
+      setGameState((prev) => ({
+        ...prev,
+        guessesLeft: prev.guessesLeft < 1 ? 0 : prev.guessesLeft - 1,
+      }));
     } catch (err) {
       console.log("There was an error sending the guess:", err);
     }
   };
+
   return (
     <div className="min-h-screen bg-pokemon-black">
       {/* Header */}
@@ -138,37 +195,40 @@ const GuessingPage: React.FC = () => {
           pokemonSil={silhoutte}
           showSilhouette={showSilhouette}
           changeShowStatus={setShowSilhouette}
-          isGameOver={gameOver}
+          isGameOver={gameState.gameOver}
         />
 
         {/* Game Status */}
         <div className="flex flex-col items-center">
           <div className="flex items-center justify-center gap-6 mb-8">
             <PrevGameSelector
-              disabled={!gameOver}
+              disabled={!gameState.gameOver}
               currentDate={selectedDate}
               onPrevDateSelect={handlePrevDateSelect}
             />
-            <Timer timeRef={timeRef} isRunning={!gameOver} />
+            <Timer timeRef={timeRef} isRunning={!gameState.gameOver} />
           </div>
           <GameStatusBox
-            isGameOver={gameOver}
-            isWon={isWon}
-            guessCount={maxGuesses - guessesLeft}
-            maxGuesses={maxGuesses}
+            isGameOver={gameState.gameOver}
+            isWon={gameState.isWon}
+            guessCount={gameState.maxGuesses - gameState.guessesLeft}
+            maxGuesses={gameState.maxGuesses}
             timeElapsed={timeRef.current}
           />
         </div>
 
         {/* Search Bar */}
-        {!gameOver && (
+        {!gameState.gameOver && (
           <div className="mb-8">
             <SearchBar onGuess={sendGuess} isDisabled={disableSearchBar} />
           </div>
         )}
 
         {/*Guess List */}
-        <GuessList guessRounds={guessList} maxGuesses={maxGuesses} />
+        <GuessList
+          guessRounds={gameState.guessList}
+          maxGuesses={gameState.maxGuesses}
+        />
       </div>
     </div>
   );

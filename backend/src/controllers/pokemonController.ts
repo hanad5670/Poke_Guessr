@@ -22,7 +22,7 @@ export const searchPokemonByName = async (
   try {
     const result = await query(
       "SELECT name FROM pokemon WHERE LOWER(name) LIKE $1 ORDER BY LOWER(name) LIKE LOWER($1) || '%' DESC, name ASC LIMIT 10",
-      [`%${searchQuery.toLowerCase()}%`]
+      [`${searchQuery.toLowerCase()}%`]
     );
     res.status(200).json(result.rows.map((row) => row.name));
   } catch (err) {
