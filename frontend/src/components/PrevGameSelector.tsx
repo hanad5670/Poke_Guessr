@@ -17,7 +17,7 @@ const PrevGameSelector: React.FC<Props> = ({
     const days: Date[] = [];
     const today = new Date();
 
-    for (let i = 1; i < numDays; i++) {
+    for (let i = 1; i < numDays + 1; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
       days.push(date);

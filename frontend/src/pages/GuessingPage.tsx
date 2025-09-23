@@ -49,7 +49,6 @@ const GuessingPage: React.FC = () => {
   const timeRef = useRef(gameState.timeElapsed);
 
   const playingTodaysGame = selectedDate === userLocalDate;
-  console.log(userLocalDate);
 
   // Setting up the game
   useEffect(() => {
@@ -142,23 +141,27 @@ const GuessingPage: React.FC = () => {
         guess,
       });
       const guessFeedback = response.data as GuessRound;
-      setGameState((prev) => ({
-        ...prev,
-        guessList: [...prev.guessList, guessFeedback],
-      }));
 
-      // If user guessed correctly, end the game
-      if (guessFeedback.guessHint.name === "correct") {
-        setGameState((prev) => ({
+      setGameState((prev) => {
+        const newIsWon =
+          guessFeedback.guessHint.name === "correct" ? true : prev.isWon;
+        const newGuessList = [...prev.guessList, guessFeedback];
+        const newGuessesLeft = prev.guessesLeft < 1 ? 0 : prev.guessesLeft - 1;
+
+        const newState = {
           ...prev,
-          isWon: true,
-        }));
-      }
+          guessList: newGuessList,
+          guessesLeft: newGuessesLeft,
+          isWon: newIsWon,
+        };
 
-      setGameState((prev) => ({
-        ...prev,
-        guessesLeft: prev.guessesLeft < 1 ? 0 : prev.guessesLeft - 1,
-      }));
+        // store state if today's game
+        if (playingTodaysGame) {
+          localStorage.setItem("gameState", JSON.stringify(newState));
+        }
+
+        return newState;
+      });
     } catch (err) {
       console.log("There was an error sending the guess:", err);
     }
@@ -185,7 +188,9 @@ const GuessingPage: React.FC = () => {
         <div className="text-center mb-6">
           <div className="bg-pokemon-gray border-4 border-gray-900 rounded-lg p-4 max-w-md mx-auto shadow-lg">
             <div className="text-pokemon-yellow font-bold text-lg">
-              Who's that Pokémon?
+              {playingTodaysGame
+                ? "Who's Today's Pokémon?"
+                : `Flashback: ${selectedDate}`}
             </div>
           </div>
         </div>

@@ -71,7 +71,6 @@ const GuessBox: React.FC<Props> = ({
 
       case "height":
         const height = value as number;
-        console.log(height);
         return `${(height / 100).toFixed(1)}m`;
 
       case "weight":
