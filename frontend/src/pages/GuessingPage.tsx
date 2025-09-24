@@ -52,34 +52,45 @@ const GuessingPage: React.FC = () => {
 
   // Setting up the game
   useEffect(() => {
-    setSelectedDate(userLocalDate);
-    getNumGuesses();
-    getSilhouette(userLocalDate);
+    if (!gameState.gameOver) {
+      startGame(selectedDate);
+    }
   }, []);
 
   // Check if the user has won or lost the game
   useEffect(() => {
     if (gameState.isWon || gameState.guessesLeft == 0) {
-      setGameState((prev) => {
-        const newState = {
-          ...prev,
-          gameOver: true,
-          timeElapsed: timeRef.current,
-          lastPlayed: userLocalDate,
-        };
-
-        // Update only if the user is playing today's game
-        if (playingTodaysGame) {
-          localStorage.setItem("gameState", JSON.stringify(newState));
-        }
-        return newState;
-      });
-      setDisableSearchBar(true);
-      // Replace silhouette with pokemon sprite
-      getPokeImage(selectedDate);
-      setShowSilhouette(true);
+      endGame(selectedDate);
     }
   }, [gameState.isWon, gameState.guessesLeft]);
+
+  // Setting up start of game:
+  const startGame = (date: string) => {
+    getNumGuesses();
+    getSilhouette(date);
+  };
+
+  // Ending the game:
+  const endGame = (date: string) => {
+    setGameState((prev) => {
+      const newState = {
+        ...prev,
+        gameOver: true,
+        timeElapsed: timeRef.current,
+        lastPlayed: userLocalDate,
+      };
+
+      // Update only if the user is playing today's game
+      if (playingTodaysGame) {
+        localStorage.setItem("gameState", JSON.stringify(newState));
+      }
+      return newState;
+    });
+    setDisableSearchBar(true);
+    // Replace silhouette with pokemon sprite
+    getPokeImage(date);
+    setShowSilhouette(true);
+  };
 
   // Resets the game state for a new game
   const resetGame = () => {
