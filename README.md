@@ -6,7 +6,7 @@
 
 This project is a Pokémon guessing game with a React frontend (Vite) and a Node backend using PostgreSQL. The backend includes Python scripts to fetch Pokémon data, seed the database, and generate Pokémon images with silhouettes.
 
-The user gets 8 guesses to find out the pokemon of the day using hints from each of their guesses (like pokdex number, region, type, etc.). After they win or lose the game of the day, they can play the games from previous days and try to guess those pokemon.
+The user gets 8 guesses to find out the pokemon of the day using hints from each of their guesses (like pokedex number, region, type, etc.). After they win or lose the game of the day, they can play the games from previous days and try to guess those pokemon.
 
 ---
 
